@@ -1,68 +1,94 @@
-# Image Processing Pipeline
+# Image Processing with CUDA C++
 
-This project provides a Python-based image processing pipeline capable of handling a large dataset of images. The pipeline supports basic image operations such as resizing, filtering, and color transformations. It processes images from a specified input directory and saves the results in an output directory.
+## Objective
+The objective of this project is to implement from scratch in CUDA C++ various image processing algorithms.
+A Cpu and a Gpu version of the following algorithms is implemented and commented:
+- Canny Edge Detection
+- Non Local-Means De-Noising
+- K-Nearest Neighbors De-Noising
+- Convolution Blurring
+- Pixelize
 
-## Features
+We benchmarked the [Gpu](https://github.com/ConsciousML/canny-edge-cuda/blob/master/src/gpu/bench/benchs.ipynb) and [Cpu](https://github.com/ConsciousML/canny-edge-cuda/blob/master/src/cpu/bench/benchs.ipynb) version.
 
-- Load images from a directory.
-- Apply various image processing techniques.
-- Save processed images to an output directory.
+## Setup:
+Make sure you have a CUDA capable GPU and install cudatoolkit for your OS.
+Then run:
+```bash
+    cd src/gpu
+    mkdir build && cd build
+    cmake ..
+    make
+```
 
-## Requirements
+## Algorithms :
+### Canny Edge Detection
+![nlm](images/edge_detect.jpg)
+<br>
+Detects the edges of an image.
+<br>
 
-- Python 3.x
-- The following Python libraries:
-  - `numpy`
-  - `pillow`
-  - `opencv-python`
-  - `scikit-image`
-  - `matplotlib`
+Usage:
+```bash
+    ./main <image_path> edge_detect
+```
 
-## Installation
+### Non Local-Means De-noising
+![nlm](images/nlm_results.jpg)
+<br>
+Removes the grain of an image.
+<br>
+Benchmark:
+- Cpu:
 
-1. Clone the repository:
+<img src="images/bench_cpu_nlm_514.png" height="256" width="414">
 
-   ```bash
-   git clone <repository-url>
-   cd <repository-folder>
-    ```
+- Gpu:
 
-2. Install the required Python libraries:
-    ```bash
-    pip install numpy pillow opencv-python scikit-image matplotlib
-    ```
+<img src="images/bench_gpu_nlm_514.png" height="256" width="414">
 
-## Usage
-1. Prepare your images:
-    - Place the images you want to process in the input_images folder.
+Usage:
+```bash
+    ./main <image_path> nlm <conv_size> <hyper_param>
+```
 
-2. Configure the processing script:
-    - Update file.py if necessary to adjust processing parameters.
+### K-Nearest Neighbors De-noising
+![nlm](images/knn_results.jpg)
+<br>
+Removes the noise of an image using the KNN algorithm.
+<br>
+Benchmark:
+- Cpu:
 
-3. Run the processing pipeline:
-    - Execute the script using Python: 
-    ```bash 
-    chmod u+x run.sh
-    ./run.sh
-    ```
+<img src="images/bench_cpu_knn.png" height="256" width="414">
 
-## How It Works
+- Gpu:
 
-### Setup Environment:
+<img src="images/bench_gpu_knn.png" height="256" width="414">
 
-- **Dependencies Installation:** The `run.sh` script installs the necessary Python libraries (`numpy`, `pillow`, `opencv-python`, `scikit-image`, `matplotlib`) using `pip`.
-- **Execution:** After installing the dependencies, it runs the `file.py` script.
+Usage:
+```bash
+    ./main <image_path> nlm <conv_size> <block_radius> <weight_decay>
+```
 
-### Image Preparation:
+### Convolution Blurring
+![conv_res](images/conv_res.jpg)
+<br>
+Blurs an image using the convolution operator.
+<br>
+Usage:
+```bash
+    ./main <image_path> conv <conv_size>
+    ./main <image_path> shared_conv <conv_size>
+```
+Use `shared_conv` for an optimized version using shared memory.
 
-- **Input Folder:** Place your images in the `input_images` directory. This is the directory where the script will read images from.
-
-### Processing Script (`file.py`):
-
-- **Loading Images:** The script reads images from the `input_images` directory using OpenCV.
-- **Processing:** It applies specified image processing techniques to each image. In the provided example, the image is converted to grayscale and then blurred using a Gaussian filter.
-- **Saving Results:** The processed images are saved in the `processed_images` directory. The filenames remain the same, but the images have undergone the specified processing steps.
-
-### Results:
-
-- **Output Folder:** After processing, you can find the results in the `processed_images` folder. This will contain the images as per the processing steps defined in `file.py`.
+### Pixelize
+![conv_res](images/pixelize.jpg)
+<br>
+Pixelizes an image.
+<br>
+Usage
+```bash
+    ./main <image_path> pixelize <conv_size>
+```
